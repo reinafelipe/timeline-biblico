@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Timeline Bíblico — Folhas para Impressão</title>
+<style>
+  :root{--ink:#3a2f22; --card:#fffdf7; --accent:#b0413e; --gold:#c9a227; --line:#8a6f4d;}
+  body{font-family:Georgia,serif; color:var(--ink); background:#e8e0cf; margin:0;}
+  #info{padding:16px 24px; background:#fff; border-bottom:2px solid var(--gold); font-size:.9rem;}
+  #info h1{margin:0 0 6px; font-size:1.2rem; color:var(--accent);}
+  .page{
+    width:210mm; min-height:297mm; margin:10px auto; background:#fff; padding:12mm 10mm;
+    display:grid; grid-template-columns:repeat(4,45mm); grid-auto-rows:70mm; gap:2mm;
+    justify-content:center; align-content:start; box-shadow:0 2px 8px rgba(0,0,0,.2);
+  }
+  .card{
+    width:45mm; height:70mm; border:1px dashed #bbb; border-radius:3mm; background:var(--card);
+    display:flex; flex-direction:column; overflow:hidden; position:relative;
+  }
+  .art{flex:1; display:flex; align-items:center; justify-content:center; font-size:11mm;
+       background:linear-gradient(160deg,#efe6d0,#e2d4b6); overflow:hidden;}
+  .art img{width:100%; height:100%; object-fit:cover;}
+  .title{font-size:2.6mm; font-weight:bold; text-align:center; padding:1.5mm 2mm; line-height:1.3;
+         border-top:.8mm solid var(--gold); min-height:12mm; display:flex; align-items:center; justify-content:center;}
+  .date{text-align:center; font-size:3.2mm; font-weight:bold; letter-spacing:.5mm; color:#fff;
+        background:var(--accent); padding:1mm 0 1.5mm;}
+  .ref{position:absolute; top:1.5mm; right:2mm; font-size:2mm; color:rgba(58,47,34,.6);
+       background:rgba(255,253,247,.85); padding:.3mm 1mm; border-radius:1mm;}
+  .back .brand{flex:0 0 auto; text-align:center; font-size:2.2mm; letter-spacing:1mm; color:var(--line);
+        padding:1.5mm 0; text-transform:uppercase;}
+  h2.sec{width:210mm; margin:14px auto 0; font-size:1rem; color:var(--line);}
+  @media print{
+    #info,h2.sec{display:none;}
+    body{background:#fff;}
+    .page{margin:0; box-shadow:none; page-break-after:always;}
+  }
+</style>
+</head>
+<body>
+<div id="info">
+  <h1>Timeline Bíblico — folhas para impressão</h1>
+  Cartas de 45&times;70&nbsp;mm, 12 por página A4. As páginas de <b>frente</b> e <b>verso</b> se alternam:
+  imprima frente e verso (duplex), virando na <b>borda longa</b> — os versos já estão espelhados por linha
+  para alinhar com as frentes. Depois recorte nas linhas tracejadas. Dica: papel 250&nbsp;g/m².
+</div>
+<div id="sheets"></div>
+<script src="cards.js"></script>
+<script>
+const PER_PAGE=12, COLS=4;
+function frontEl(c){
+  const d=document.createElement('div'); d.className='card';
+  d.innerHTML=`<div class="art"><img src="images/${c.id}.jpg" alt="" onerror="if(!this.dataset.p){this.dataset.p=1;this.src='images/${c.id}.png'}else{this.outerHTML='<span>${c.emoji}</span>'}"></div>
+    <div class="title">${c.pt}</div><div class="ref">${c.ref}</div>`;
+  return d;
+}
+function backEl(c){
+  const d=document.createElement('div'); d.className='card back';
+  d.innerHTML=`<div class="brand">Timeline Bíblico</div>
+    <div class="art"><img src="images/${c.id}.jpg" alt="" onerror="if(!this.dataset.p){this.dataset.p=1;this.src='images/${c.id}.png'}else{this.outerHTML='<span>${c.emoji}</span>'}"></div>
+    <div class="title">${c.pt}</div><div class="date">${c.display}</div><div class="ref">${c.ref}</div>`;
+  return d;
+}
+function mirrorRows(arr){ // espelha cada linha de 4 para impressão duplex
+  const out=[];
+  for(let i=0;i<arr.length;i+=COLS) out.push(...arr.slice(i,i+COLS).reverse());
+  return out;
+}
+const sheets=document.getElementById('sheets');
+for(let i=0;i<CARDS.length;i+=PER_PAGE){
+  const chunk=CARDS.slice(i,i+PER_PAGE);
+  const h1=document.createElement('h2'); h1.className='sec'; h1.textContent=`Página ${i/PER_PAGE*2+1} — frentes`;
+  const pf=document.createElement('div'); pf.className='page';
+  chunk.forEach(c=>pf.appendChild(frontEl(c)));
+  const h2=document.createElement('h2'); h2.className='sec'; h2.textContent=`Página ${i/PER_PAGE*2+2} — versos (espelhados)`;
+  const pb=document.createElement('div'); pb.className='page';
+  mirrorRows(chunk).forEach(c=>pb.appendChild(backEl(c)));
+  sheets.append(h1,pf,h2,pb);
+}
+</script>
+</body>
+</html>
