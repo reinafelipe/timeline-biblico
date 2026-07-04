@@ -9,3 +9,5 @@ Jogo de cartas no estilo *Timeline*: posicione cada evento bíblico no lugar cer
 - Datas aproximadas conforme a [Bible Timeline do BibleHub](https://biblehub.com/timeline/)
 - `print.html` gera folhas A4 (cartas 45×70 mm, frente e verso) para montar a versão física
 - Ilustrações geradas com Google Flow (Nano Banana)
+
+- Site: https://reinafelipe.github.io/timeline-biblico/
